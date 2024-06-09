@@ -15,8 +15,16 @@ export const queryNpms = async (): Promise<NpmjsResponse> => {
           size: 1,
         },
         method: "GET",
-    }).catch((response: GaxiosError<NpmjsResponse>) => {
-        throw Error(`Failed to download ${response.config.url}\n${response.message}`);
+    })
+    .then(((response) => {
+        if (!response.data?.objects?.length) {
+            throw Error(`Not found package`);
+        }
+
+        return response;
+    }))
+    .catch((response: GaxiosError<NpmjsResponse>) => {
+        throw Error(`Failed to download.\n${response.message}`);
     });
 
     return npmsResponse.data;
