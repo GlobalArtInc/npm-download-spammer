@@ -67,7 +67,7 @@ export const run = async (): Promise<void> => {
         const stats: Stats = new Stats(startTime);
         const loggingInterval: NodeJS.Timeout = setInterval(() => logDownload(stats), 1000);
         await spamDownloads(version, stats);
-
+        
         clearInterval(loggingInterval);
         logComplete();
     } catch (e) {

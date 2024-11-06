@@ -29,6 +29,7 @@ export const mapToDate = (seconds: number | null): string => {
 };
 
 export const logDownload = (stats: Stats): void => {
+    console.log(1);
     if (!terminalSpinner.isSpinning) {
         terminalSpinner.start();
     }
