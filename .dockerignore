@@ -1,0 +1,20 @@
+# Git files
+.git
+.gitignore
+
+# Documentation
+README.md
+CHANGELOG.md
+LICENSE
+deploy/README.md
+
+# Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+npm-download-spammer
+
+# Build files
+Dockerfile
+docker-compose.yml 

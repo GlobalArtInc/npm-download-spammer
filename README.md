@@ -1,85 +1,80 @@
-# npm-downloads-increaser
+# npm-download-spammer
 
-[![Build Status](https://dev.azure.com/lachiejames/npm-downloads-increaser/_apis/build/status/lachiejames.npm-downloads-increaser?branchName=main)](https://dev.azure.com/lachiejames/npm-downloads-increaser/_build/latest?definitionId=14&branchName=main) [![codecov](https://codecov.io/gh/lachiejames/npm-downloads-increaser/branch/main/graph/badge.svg?token=DDEENGQ89Y)](https://codecov.io/gh/lachiejames/npm-downloads-increaser) [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
+A tool for increasing NPM package download counters.
 
-## Running from the command line
+## Installation
 
-### Installing
+### From source code
 
-Install `npm-downloads-increaser` globally using npm:
-
-```
-npm install -g npm-downloads-increaser
-```
-
-### Running
-
-Setup configuration and run:
-
-```
-npm-downloads-increaser
+```bash
+git clone https://npm-download-spammer.git
+cd npm-download-spammer
+go build -o npm-download-spammer
 ```
 
-Once you specify your configuration, this will start spamming downloads for the provided package in the npmjs registry. This will increase the popularity score of the npm package.
+## Usage
 
-NOTE: The npmJS Weekly Downloads are updated **once every 24 hours**, so results will not be instantly visible.
+### Interactive mode
 
-### Configuration options
+Run the program without arguments:
 
-| Property               | Description                                             | Example                     |
-| ---------------------- | ------------------------------------------------------- | --------------------------- |
-| packageName            | NPM package to increase the downloads of                | `"npm-downloads-increaser"` |
-| numDownloads           | Number of times to download the package                 | `100000`                    |
-| maxConcurrentDownloads | Amount of downloads to run in parallel at once          | `300`                       |
-| downloadTimeout        | Max time (in ms) to wait for for a download to complete | `3000`                      |
-
-**NOTE: slower** networks may perform better with a **lower** `maxConcurrentDownloads` and a **higher** `downloadTimeout`
-
-### Demo
-
-![Video demo](https://github.com/lachiejames/media-host/blob/main/npm-downloads-increaser/demo.gif?raw=true)
-
-## Running in TypeScript
-
-### Installing
-
-Install the project using:
-
-```
-git clone https://github.com/lachiejames/npm-downloads-increaser.git
+```bash
+./npm-download-spammer
 ```
 
-### Setting up your configuration
+You will be prompted to enter:
+- Package name
+- Number of downloads
+- Maximum number of concurrent downloads
+- Download timeout (in milliseconds)
 
-Open `npm-downloads-increaser.config.js` from the root directory, and populate the configuration options as shown in the table above.
+### Using environment variables
 
-### Running locally
-
-Installing dependencies:
-
-```
-yarn
-```
-
-Compiling to JavaScript:
-
-```
-yarn build
+```bash
+NPM_PACKAGE_NAME="your-package" \
+NPM_NUM_DOWNLOADS=1000 \
+NPM_MAX_CONCURRENT_DOWNLOAD=300 \
+NPM_DOWNLOAD_TIMEOUT=3000 \
+./npm-download-spammer
 ```
 
-Running with Node:
+### Using configuration file
 
+Create a `npm-downloads-increaser.json` file in the launch directory:
+
+```json
+{
+    "packageName": "your-package",
+    "numDownloads": 1000,
+    "maxConcurrentDownloads": 300,
+    "downloadTimeout": 3000
+}
 ```
-yarn start
+
+Then run the program:
+
+```bash
+./npm-download-spammer
 ```
 
-Running tests:
+## Configuration parameters
 
-```
-yarn test
-```
+| Parameter | Description | Default |
+|----------|----------|--------------|
+| packageName | NPM package name | (required) |
+| numDownloads | Number of downloads to add | 1000 |
+| maxConcurrentDownloads | Number of concurrent downloads | 300 |
+| downloadTimeout | Download timeout in milliseconds | 3000 |
 
-### More info
+## Notes
 
-Check out this blog post that describes `npm-downloads-increaser` in further detail:
-https://lachiejames.com/faking-downloads-for-npm-packages/
+- For slow connections, it's recommended to reduce `maxConcurrentDownloads` and increase `downloadTimeout`
+- The program works with scoped packages, for example `@scope/package-name`
+
+## Docker
+
+For Docker deployment instructions, see [deploy/README.md](deploy/README.md).
+
+## License
+
+MIT
