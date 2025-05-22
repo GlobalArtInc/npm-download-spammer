@@ -1,7 +1,6 @@
-version: '3.8'
-
 services:
   npm-download-spammer:
+    image: globalartltd/npm-download-spammer
     build:
       context: ..
       dockerfile: deploy/Dockerfile
@@ -10,6 +9,5 @@ services:
       NPM_NUM_DOWNLOADS: 1000
       NPM_MAX_CONCURRENT_DOWNLOAD: 300
       NPM_DOWNLOAD_TIMEOUT: 3000
-    # For interactive input, add stdin_open and tty flags
     stdin_open: true
-    tty: true 
+    tty: true

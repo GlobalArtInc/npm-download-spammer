@@ -25,4 +25,4 @@ ENV NPM_NUM_DOWNLOADS=1000
 ENV NPM_MAX_CONCURRENT_DOWNLOAD=300
 ENV NPM_DOWNLOAD_TIMEOUT=3000
 
-ENTRYPOINT ["/app/npm-download-spammer"] 
+ENTRYPOINT ["sh", "-c", "/app/npm-download-spammer"]
