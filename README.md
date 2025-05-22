@@ -71,6 +71,30 @@ Then run the program:
 - For slow connections, it's recommended to reduce `maxConcurrentDownloads` and increase `downloadTimeout`
 - The program works with scoped packages, for example `@scope/package-name`
 
+## Testing
+
+To run all tests and generate coverage report:
+
+```bash
+# Run the test script
+./scripts/run_tests.sh
+```
+
+The coverage report will be generated in HTML format and saved to `coverage/coverage.html`.
+
+You can also run specific tests:
+
+```bash
+# Run tests for a specific package
+go test ./pkg/utils
+
+# Run tests with verbose output
+go test -v ./...
+
+# Run a specific test
+go test -run TestLoadConfig ./pkg/config
+```
+
 ## Docker
 
 For Docker deployment instructions, see [deploy/README.md](deploy/README.md).
