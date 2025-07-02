@@ -1,9 +1,15 @@
 package models
 
+// Publisher represents the publisher of an NPM package
+type Publisher struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+}
+
 // Maintainer represents an NPM package maintainer
 type Maintainer struct {
-	Username  string `json:"username"`
-	Email     string `json:"email"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
 }
 
 // NpmPackage represents information about an NPM package
@@ -15,7 +21,7 @@ type NpmPackage struct {
 	Keywords    []string          `json:"keywords"`
 	Date        string            `json:"date"`
 	Links       map[string]string `json:"links"`
-	Publisher   map[string]string `json:"publisher"`
+	Publisher   Publisher         `json:"publisher"`
 	Maintainers []Maintainer      `json:"maintainers"`
 }
 
@@ -27,4 +33,4 @@ type NpmObject struct {
 // NpmjsResponse represents a response from the NPM API
 type NpmjsResponse struct {
 	Objects []NpmObject `json:"objects"`
-} 
+}
