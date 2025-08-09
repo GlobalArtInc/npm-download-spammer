@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/manifoldco/promptui"
 )
@@ -12,12 +13,12 @@ import (
 func GetConfigFromCLI() (Config, error) {
 	config := DefaultConfig()
 
-	// Request package name
-	packageName, err := promptPackageName()
+	// Request package names
+	packageNames, err := promptPackageNames()
 	if err != nil {
 		return config, err
 	}
-	config.PackageName = packageName
+	config.SetPackageNames(packageNames)
 
 	// Request number of downloads
 	numDownloads, err := promptNumericValue("Number of downloads", 1000)
@@ -43,17 +44,26 @@ func GetConfigFromCLI() (Config, error) {
 	return config, nil
 }
 
-// promptPackageName requests package name with validation
-func promptPackageName() (string, error) {
+// promptPackageNames requests package names with validation (supports comma-separated input)
+func promptPackageNames() (string, error) {
 	validate := func(input string) error {
 		if input == "" {
-			return errors.New("package name cannot be empty")
+			return errors.New("package names cannot be empty")
 		}
+
+		packages := strings.Split(input, ",")
+		for _, pkg := range packages {
+			trimmed := strings.TrimSpace(pkg)
+			if trimmed == "" {
+				return errors.New("package name cannot be empty")
+			}
+		}
+
 		return nil
 	}
 
 	prompt := promptui.Prompt{
-		Label:    "Package name",
+		Label:    "Package names (comma-separated for multiple)",
 		Validate: validate,
 	}
 
@@ -65,6 +75,11 @@ func promptPackageName() (string, error) {
 	return result, nil
 }
 
+// promptPackageName requests package name with validation
+func promptPackageName() (string, error) {
+	return promptPackageNames()
+}
+
 // promptNumericValue requests numeric value with validation
 func promptNumericValue(label string, defaultValue int) (int, error) {
 	validate := func(input string) error {
@@ -72,12 +87,12 @@ func promptNumericValue(label string, defaultValue int) (int, error) {
 		if err != nil {
 			return errors.New("please enter a valid number")
 		}
-		
+
 		num, _ := strconv.Atoi(input)
 		if num <= 0 {
 			return errors.New("value must be greater than 0")
 		}
-		
+
 		return nil
 	}
 
@@ -94,4 +109,4 @@ func promptNumericValue(label string, defaultValue int) (int, error) {
 
 	value, _ := strconv.Atoi(result)
 	return value, nil
-} 
+}

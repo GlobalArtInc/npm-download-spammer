@@ -96,8 +96,9 @@ func TestMainWithEnvVars(t *testing.T) {
 	}
 	
 	// Verify configuration values
-	if cfg.PackageName != "test-package" {
-		t.Errorf("cfg.PackageName = %s; want test-package", cfg.PackageName)
+	packageNames := cfg.GetPackageNames()
+	if len(packageNames) != 1 || packageNames[0] != "test-package" {
+		t.Errorf("cfg.GetPackageNames() = %v; want [test-package]", packageNames)
 	}
 	
 	if cfg.NumDownloads != 1 {

@@ -1,6 +1,6 @@
 {
-  "packageName": "",
-  "numDownloads": 1000,
-  "maxConcurrentDownloads": 300,
-  "downloadTimeout": 3000
+    "packageNames": [],
+    "numDownloads": 1000,
+    "maxConcurrentDownloads": 300,
+    "downloadTimeout": 3000
 }

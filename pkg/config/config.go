@@ -4,12 +4,16 @@ import (
 	"encoding/json"
 	"os"
 	"strconv"
+	"strings"
 )
 
 // Config contains settings for program operation
 type Config struct {
-	// NPM package name to increase download counter
-	PackageName string `json:"packageName"`
+	// NPM package name to increase download counter (legacy)
+	PackageName string `json:"packageName,omitempty"`
+
+	// NPM package names to increase download counter (new field)
+	PackageNames []string `json:"packageNames,omitempty"`
 
 	// Number of downloads to add to the package
 	NumDownloads int `json:"numDownloads"`
@@ -21,10 +25,42 @@ type Config struct {
 	DownloadTimeout int `json:"downloadTimeout"`
 }
 
+// GetPackageNames returns the list of package names from both old and new fields
+func (c *Config) GetPackageNames() []string {
+	if len(c.PackageNames) > 0 {
+		return c.PackageNames
+	}
+	if c.PackageName != "" {
+		return []string{c.PackageName}
+	}
+	return []string{}
+}
+
+// SetPackageNames sets package names from a comma-separated string
+func (c *Config) SetPackageNames(input string) {
+	c.PackageNames = []string{}
+	c.PackageName = ""
+	
+	if input == "" {
+		return
+	}
+	
+	packages := strings.Split(input, ",")
+	c.PackageNames = make([]string, 0, len(packages))
+	
+	for _, pkg := range packages {
+		trimmed := strings.TrimSpace(pkg)
+		if trimmed != "" {
+			c.PackageNames = append(c.PackageNames, trimmed)
+		}
+	}
+}
+
 // DefaultConfig returns the default configuration
 func DefaultConfig() Config {
 	return Config{
 		PackageName:            "",
+		PackageNames:           []string{},
 		NumDownloads:           1000,
 		MaxConcurrentDownloads: 300,
 		DownloadTimeout:        3000,
@@ -49,7 +85,7 @@ func LoadConfig() (Config, error) {
 
 	// Override from environment variables if they are set
 	if packageName := os.Getenv("NPM_PACKAGE_NAME"); packageName != "" {
-		config.PackageName = packageName
+		config.SetPackageNames(packageName)
 	}
 
 	if numDownloads := os.Getenv("NPM_NUM_DOWNLOADS"); numDownloads != "" {
@@ -71,4 +107,4 @@ func LoadConfig() (Config, error) {
 	}
 
 	return config, nil
-} 
+}

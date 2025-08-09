@@ -16,9 +16,9 @@ import (
 
 // QueryNpms requests package information from the NPM API
 func QueryNpms(packageName string) (*models.NpmjsResponse, error) {
-	url := fmt.Sprintf("https://registry.npmjs.com/-/v1/search?text=%s&size=1", 
+	url := fmt.Sprintf("https://registry.npmjs.com/-/v1/search?text=%s&size=1",
 		utils.GetEncodedPackageName(packageName))
-	
+
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, fmt.Errorf("HTTP request error: %w", err)
@@ -49,7 +49,7 @@ func QueryNpms(packageName string) (*models.NpmjsResponse, error) {
 // DownloadPackage downloads a package to increase the download counter
 func DownloadPackage(packageName, version string, stats *models.Stats, timeout int) error {
 	unscopedPackageName := utils.StripOrganisationFromPackageName(packageName)
-	url := fmt.Sprintf("https://registry.yarnpkg.com/%s/-/%s-%s.tgz", 
+	url := fmt.Sprintf("https://registry.yarnpkg.com/%s/-/%s-%s.tgz",
 		packageName, unscopedPackageName, version)
 
 	client := &http.Client{
@@ -102,8 +102,32 @@ func Run(cfg config.Config) error {
 	// Initialize the logger
 	logger.Initialize()
 
+	packageNames := cfg.GetPackageNames()
+	if len(packageNames) == 0 {
+		return fmt.Errorf("no package names specified")
+	}
+
+	var errors []error
+	for _, packageName := range packageNames {
+		err := runForPackage(cfg, packageName)
+		if err != nil {
+			errors = append(errors, fmt.Errorf("error processing package %s: %v", packageName, err))
+			logger.LogError(errors[len(errors)-1])
+			continue
+		}
+	}
+
+	if len(errors) == len(packageNames) {
+		return fmt.Errorf("failed to process all packages")
+	}
+
+	return nil
+}
+
+// runForPackage processes downloads for a single package
+func runForPackage(cfg config.Config, packageName string) error {
 	// Get package information
-	npmResponse, err := QueryNpms(cfg.PackageName)
+	npmResponse, err := QueryNpms(packageName)
 	if err != nil {
 		return err
 	}
@@ -130,12 +154,17 @@ func Run(cfg config.Config) error {
 	// Start downloads
 	var wg sync.WaitGroup
 	wg.Add(1)
-	go SpamDownloads(cfg, version, stats, &wg)
+
+	// Create a config copy with single package name for SpamDownloads
+	singlePackageCfg := cfg
+	singlePackageCfg.PackageName = packageName
+
+	go SpamDownloads(singlePackageCfg, version, stats, &wg)
 
 	// Wait for all downloads to complete
 	wg.Wait()
 	done <- true
 
-	logger.LogComplete(cfg.PackageName, stats.SuccessfulDownloads)
+	logger.LogComplete(packageName, stats.SuccessfulDownloads)
 	return nil
-} 
+}
